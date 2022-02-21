@@ -1,0 +1,47 @@
+(medium)
+语言：Python
+题目：字符串 S 由小写字母组成。我们要把这个字符串划分为尽可能多的片段，同一字母最多出现在一个片段中。返回一个表示每个字符串片段的长度的列表。
+示例：    
+    输入：S = "ababcbacadefegdehijhklij"
+    输出：[9,7,8]
+    解释：
+    划分结果为 "ababcbaca", "defegde", "hijhklij"。
+    每个字母最多出现在一个片段中。
+    像 "ababcbacadefegde", "hijhklij" 的划分是错误的，因为划分的片段数较少。
+
+解法一：
+class Solution:
+    def partitionLabels(self, s: str) -> List[int]:
+        hash = [0]*26
+        for i in range(len(s)):
+            hash[ord(s[i])-ord('a')] = i   #记录了每个字母的最后一次出现的下标
+        result = []
+        start = end = 0
+        for i in range(len(s)):
+            end = max(end,hash[ord(s[i])-ord('a')])       #更新最后一次的下标
+            if i == end:
+                result.append(end-start+1)                #计算长度
+                start = i+1                               #开始下标到新的区间
+        return result
+
+这道题解可以理解为先找到一个最后的字母下标，然后遍历开始到结束这段区间的所有字母的最后出现下标，如果有在之前找到的下标后面的，就更新
+下标继续遍历，遍历结束的条件是当遍历的i与此时该字母的最后的下标相同时结束。然后更新开始的下标区间在继续遍历
+
+解法二：
+class Solution:
+    def partitionLabels(self, S: str) -> List[int]:
+        dic = {s: index for index, s in enumerate(S)}   #存储某个字母对应地最后一个序号
+        num = 0  #直接计数
+        result = []
+        j = dic[S[0]]  #第一个字符的最后位置
+
+        for i in range(len(S)):  #逐个遍历
+            num += 1  #找到一个就加1个长度
+            if dic[S[i]] > j:  #思路一样，如果最后位置比刚才的大，就更新最后位置
+                j = dic[S[i]]
+            if i == j:  #思路一样，形式不同，这里就是找到这一段的结束了，就说明当前位置的index和这个字母在字典里的最后位置应该是相同的。
+                result.append(num)  # 加入result
+                num = 0 # 归0
+        return result
+        
+ 与解法一不同的是在存储整个字符串每个字母的最后出现下标时使用了字典，这样就可以直接按照字典定位。后面遍历的方法基本相同
