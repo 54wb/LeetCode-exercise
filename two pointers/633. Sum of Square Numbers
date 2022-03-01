@@ -1,0 +1,26 @@
+(Medium)
+语言：Python
+
+题目：
+  给定一个非负整数 c ，你要判断是否存在两个整数 a 和 b，使得 a2 + b2 = c 。
+
+示例 1：
+  输入：c = 5
+  输出：true
+  解释：1 * 1 + 2 * 2 = 5
+
+这道题是167.Two sum 题型的变形之一。在学习了双指针的思想之后，可以非常容易的想到用左右指针进行判定
+但是需要注意的是，LeetCode测试用例最后的数值非常大，所以右指针不可以直接是c，可以放在[0,int(sqrt(c))]之间
+
+class Solution:
+    def judgeSquareSum(self, c: int) -> bool:
+        l = 0
+        r = int(sqrt(c))
+        while l<=r:
+            if c == l*l+r*r:
+                return True
+            elif c>l*l+r*r:
+                l+=1
+            else:
+                r-=1
+        return False
