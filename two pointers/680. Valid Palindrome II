@@ -1,0 +1,56 @@
+(Easy)
+语言：Python
+
+题目：
+  给定一个非空字符串 s，最多删除一个字符。判断是否能成为回文字符串。
+
+示例 1:
+  输入: s = "aba"
+  输出: true
+
+示例 2:
+  输入: s = "abca"
+  输出: true
+  解释: 你可以删除c字符。
+  
+这道题的本质思想其实是贪心算法，一般的结题思路是先放左右指针判断是否是回文字符串，当遇到不满足情况的时，就考虑删除
+某个元素，此时在判断剩下的部分是否回文。只要两部分都是回文的，那么一定能保证整个字符串都是回文的
+
+class Solution:
+    def validPalindrome(self, s: str) -> bool: 
+        l = 0
+        r = len(s)-1
+        def ispalindrom(low,high):         #判断是否回文的子函数
+            while low<high:
+                if s[low]!=s[high]:
+                    return False
+                low+=1
+                high-=1
+            return True
+        while l<r:
+            if s[l] == s[r]:
+                l += 1
+                r -= 1
+            else:                         #删除左边或者右边都可以，只要有一个满足即可
+                return ispalindrom(l+1,r) or ispalindrom(l,r-1)
+        return True
+        
+这里贡献一个LeetCode题解中负雪明烛使用的lambda函数的代码作为参考
+class Solution(object):
+    def validPalindrome(self, s):
+        """
+        :type s: str
+        :rtype: bool
+        """
+        isPalindrome = lambda s: s == s[::-1]
+        strPart = lambda s, x: s[:x] + s[x + 1:]
+        left = 0
+        right = len(s) - 1
+        while left < right:
+            if s[left] != s[right]:
+                return isPalindrome(strPart(s, left)) or isPalindrome(strPart(s, right))
+            left += 1
+            right -= 1
+        return True
+作者：fuxuemingzhu
+链接：https://leetcode-cn.com/problems/valid-palindrome-ii/solution/cong-liang-ce-xiang-zhong-jian-zhao-dao-bu-deng-de/
