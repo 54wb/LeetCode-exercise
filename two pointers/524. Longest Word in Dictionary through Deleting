@@ -70,8 +70,8 @@ class Solution:
                     r += 1
                 l += 1
             if r == len(k):
-                if len(t) > len(res) or (len(t) == len(res) and t < res):
-                    res = t
+                if len(k) > len(res) or (len(k) == len(res) and k < res):
+                    res = k
         return res
 
 
