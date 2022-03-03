@@ -1,0 +1,78 @@
+(Medium)
+语言：Python
+
+题目：
+  给你一个字符串 s 和一个字符串数组 dictionary ，找出并返回dictionary 中最长的字符串，该字符串可以通过删除 s 中的某些字符得到。
+  如果答案不止一个，返回长度最长且字母序最小的字符串。如果答案不存在，则返回空字符串。
+
+示例 1：
+输入：s = "abpcplea", dictionary = ["ale","apple","monkey","plea"]
+输出："apple"
+
+示例2：
+输入：s = "abec",dictionary = ["abe","abc"]
+输出:"abc"
+
+这道题按照正常遍历的方法也能找出来，但是时间复杂度比较高，而且程序较为复杂，主要着重介绍双指针加排序的方法
+
+解法一：(遍历)
+class Solution:
+    def findLongestWord(self, s: str, dictionary: List[str]) -> str:
+        res = count = 0
+        for index,k in enumerate(dictionary):
+            j = cnt = 0                          #cnt 记录当前字符串的长度
+            for i in k:                          #遍历每个字符串
+                while j<len(s):
+                    if s[j] == i:
+                        j+=1
+                        cnt+=1
+                        break
+                    else:
+                        j+=1
+            if cnt == len(k):
+                if cnt>count:
+                    count = cnt
+                    res = index
+                elif cnt == count:              #当长度相同时，输出字母序最小的
+                    if dictionary[index]<dictionary[res]:
+                        res = index
+        if count == 0:
+            return ''
+        return dictionary[res]
+        
+解法二：(双指针加排序)
+class Solution:
+    def findLongestWord(self, s: str, dictionary: List[str]) -> str:
+        dictionary.sort(key=lambda x:(-len(x),x))
+        for k in dictionary:
+            l = r = 0
+            while l<len(s) and r<len(k):
+                if s[l] == k[r]:
+                    r+=1
+                l+=1
+            if r == len(k):
+                return k
+        return ""
+首先将dictionary按照先根据字符串长度从大到小排序，同等长度的按照字母序从小到大排。这样只要找到就一定是最优解
+两个指针分别指向s和dictionary的起始位置，当找对应的之后将两个指针分别向后移动一位。如果不相等就只移动指向s的指针，直到找到为止。
+
+但是在LeetCode上由于排序需要的时间完全大于找到后就直接返回的遍历时间，所以这样运行时间反而变长
+
+
+解法三：(双指针)
+class Solution:
+    def findLongestWord(self, s: str, dictionary: List[str]) -> str:
+        res = ""
+        for k in dictionary:
+            l = r = 0
+            while r < len(k) and l < len(s):
+                if k[r] == s[l]:
+                    r += 1
+                l += 1
+            if r == len(k):
+                if len(t) > len(res) or (len(t) == len(res) and t < res):
+                    res = t
+        return res
+
+
+
