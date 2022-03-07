@@ -16,7 +16,7 @@
 
 首先介绍二分法的两个模板：
 def bsearch1(l,r):              #从右边趋近找到开始位置
-  while l<r:
+  while l<=r:
     mid = (l+r)//2
     if num[mid]>=target:
       r = mid
@@ -24,7 +24,7 @@ def bsearch1(l,r):              #从右边趋近找到开始位置
 return 1
 
 def bsearch2(l,r):              #从左边趋近找到结束位置
-  while l<r:
+  while l<=r:
     mid = (l+r+1)//2
     if num[mid]<=target:
       l = mid
