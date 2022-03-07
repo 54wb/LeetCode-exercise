@@ -1,0 +1,61 @@
+(Medium)
+语言：python
+
+题目：
+  已知存在一个按非降序排列的整数数组 nums ，数组中的值不必互不相同。
+  在传递给函数之前，nums 在预先未知的某个下标 k（0 <= k < nums.length）上进行了旋转，
+  使数组变为 [nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]]（下标从0开始计数）。
+  例如，[0,1,2,4,4,4,5,6,6,7] 在下标 5 处经旋转后可能变为 [4,5,6,6,7,0,1,2,4,4] 。
+
+  给你旋转后 的数组 nums 和一个整数 target ，请你编写一个函数来判断给定的目标值是否存在于数组中。如果 nums 中存在这个目标值 target ，则返回 true ，否则返回 false 。
+
+示例 1：
+  输入：nums = [2,5,6,0,0,1,2], target = 0
+  输出：true
+
+这道题是LeetCode33的变形题目，相比之下加入了数组元素不必互不相同的要求。但是同样满足旋转之后的数组仍然可以使用二分查找。
+
+原先没重复元素的时候，比如 [4,5,6,7,0,1,2] 中，首先mid=3，不管是 0 ~ mid 或者 mid ~ n-1，总有一半数组是有序的
+要是 nums[low] <= nums[mid]，那就是左区间有序，否则右区间有序。
+但是现在出现了重复元素以后，这样判断可能会失效。
+
+因为可能出现 nums[mid]=nums[low]=nums[high]
+
+遇到这种情况，一般的办法就是收缩区间。给low+=1,high-=1,只到区间满足nums[low]!=nums[mid] or nums[high]!=nums[mid]
+
+解法：
+class Solution:
+    def search(self, nums: List[int], target: int) -> bool:
+        if not nums:
+            return False
+
+        low, high = 0, len(nums) - 1
+
+        while low <= high:
+            mid = low + (high - low) // 2
+            # 如果找到，返回结果
+            if nums[mid] == target:
+                return True
+            # 相当于去重
+            if nums[low] == nums[mid] == nums[high]:
+                low += 1
+                high -= 1
+            # 如果左区间有序
+            elif nums[low] <= nums[mid]:
+                # target 在左区间
+                if nums[low] <= target < nums[mid]:
+                    high = mid - 1
+                # target 在右区间
+                else:
+                    low = mid + 1
+            # 如果右区间有序
+            else:
+                # target 在右区间
+                if nums[mid] < target <= nums[high]:
+                    low = mid + 1
+                # target 在左区间
+                else:
+                    high = mid - 1
+
+        return False
+
