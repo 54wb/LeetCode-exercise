@@ -1,0 +1,75 @@
+(Medium)
+语言；Python
+
+题目：
+  给定整数数组 nums 和整数 k，请返回数组中第 k 个最大的元素。
+  请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
+
+示例:
+  输入: [3,2,1,5,6,4] 和 k = 2
+  输出: 5
+  
+这道题用暴力的思路直接调用API可以完成，但是要思考的是这样第几大的元素其实也是快速排序分治的思路，因为快速排序就是每次找到
+一个元素的在排序后的数组中的位置。
+在这道题中，只要我们在一次排序后该元素位置满足，就不用考虑其他元素是否已经被排序
+
+
+首先，复习一下快排的思路写法：
+//快速排序 c
+void quick_sort(int s[], int l, int r)
+{
+    if (l < r)
+    {
+        //Swap(s[l], s[(l + r) / 2]); //将中间的这个数和第一个数交换 参见注1
+        int i = l, j = r, x = s[l];
+        while (i < j)          //升序排列
+        {
+            while(i < j && s[j] >= x) // 从右向左找第一个小于x的数 
+                j--;  
+            s[i++] = s[j];
+            
+            while(i < j && s[i] < x) // 从左向右找第一个大于等于x的数
+                i++;  
+            s[j--] = s[i];
+        }
+        s[i] = x;
+        quick_sort(s, l, i - 1); // 递归调用 
+        quick_sort(s, i + 1, r);
+    }
+}
+
+快速排序还有很多改进版本，如随机选择基准数等这里就不详细展示了
+
+根据快排的思路，我们只需要做完一次排序然后返回该元素的位置。如果位置与要求相同即可返回。如果不相同就改变左右边界继续快排一次
+
+解法：
+class Solution:
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        l = 0
+        r = n - 1
+        while True:
+            idx = self.partition(nums, l, r)
+            if idx == k - 1:
+                return nums[idx]
+            elif idx < k - 1:
+                l = idx + 1
+            else:
+                r = idx - 1
+
+
+    #----左右挖坑互填
+    def partition(self, nums: List[int], l: int, r: int) -> int:
+        pivot = nums[l]
+        while l < r:             #降序排列
+            while l < r and nums[r] <= pivot:    
+                r -= 1
+            nums[l] = nums[r]
+            while l < r and nums[l] >= pivot:
+                l += 1
+            nums[r] = nums[l]
+
+        nums[l] = pivot
+        return l
+        
+        
