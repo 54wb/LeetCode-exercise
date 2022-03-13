@@ -12,7 +12,7 @@
 对于topK大这类问题，一般可以使用堆这种数据类型来实现。特别的，我们使用小顶堆来实现。
 同时，对于topK小的问题，可以使用大顶堆更容易实现
 
-因为Python内置了标准库模块heapq来实现大小堆。这里我们只需要用heapq.heapqpush和heapq.heapqpop来完成
+因为Python内置了标准库模块heapq来实现大小堆。这里我们只需要用heapq.heappush和heapq.heappop来完成
 
 解法：
 import heapq
