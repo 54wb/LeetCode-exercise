@@ -1,0 +1,7 @@
+(Medium)
+语言：Python
+
+这道题也是一个图搜索的题，可以采用逆流的方法把从太平洋的和大西洋的分别dfs一次，然后一旦有两个都可以的就记录
+但是这道题的解法比较复杂，具体可以参考这个题解
+
+https://leetcode-cn.com/problems/pacific-atlantic-water-flow/solution/pythonshi-jian-ji-bai-100-openhe-closeshuang-set-d/
