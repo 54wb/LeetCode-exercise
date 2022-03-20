@@ -1,0 +1,35 @@
+(Medium)
+语言：python
+
+题目：
+  给定一个不含重复数字的数组 nums ，返回其 所有可能的全排列 。你可以 按任意顺序 返回答案。
+
+示例 1：
+  输入：nums = [1,2,3]
+  输出：[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+
+这道题是回溯法的一个常见的例子。可以把排列的问题想象成在三个位置填数，每次对一个位置填完数后要向下继续填，但是此时要记录这次的状态并在递归完成后修改回状态，
+有过level等于n就表示此时已经填到了最后一位数，那么就要退出此次递归并把这次的结果放进res中
+
+
+
+
+
+
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        def backtrack(level):
+            if level == n:
+                res.append(nums[:])    #num[:]的原因是在保持动态数组过程中用的地址传递，需要新开辟地址存放结果，否则最后整个res里都会指向一个值
+                return
+            for i in range(level,n):
+                #保存动态数组。
+                nums[i],nums[level] = nums[level],nums[i]
+                backtrack(level+1)
+                #回溯状态
+                nums[level],nums[i] = nums[i],nums[level]
+        res = []
+        n = len(nums)
+        backtrack(0)
+        return res
+
