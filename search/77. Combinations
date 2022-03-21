@@ -1,0 +1,43 @@
+(Medium)
+语言：Python
+
+题目：
+  给定两个整数 n 和 k，返回范围 [1, n] 中所有可能的 k 个数的组合。
+  你可以按 任何顺序 返回答案。
+
+示例：
+  输入：n = 4, k = 2
+  输出：
+  [
+    [2,4],
+    [3,4],
+    [2,3],
+    [1,2],
+    [1,3],
+    [1,4],
+  ]
+
+这道题是一道组合题，与之前的46排列题非常相似。具体做法都可以用回溯法。主要的区别是组合问题不可以有不同顺序的重复元素。
+从1-n个数中选择k个数，可以先选第一个位置，接下来第二个位置。。。组成一个树形结构
+
+定义：
+path：当前以选择的组合结果
+res:存储所有的组合结果
+level：表示目前起始的位置
+class Solution:
+    def combine(self, n: int, k: int) -> List[List[int]]:
+        res = []
+        if n<k or k<=0:
+            return res
+        self.dfs(n,k,1,[],res)
+        return res
+
+    def dfs(self,n,k,level,path,res):  
+        if len(path) == k:
+            res.append(path[:])
+            return 
+        for i in range(level,n-k+len(path)+2):            #n-k+len(path)+2为剪枝操作，由于path的长度增多，在选择某些元素时后面的元素已经不够选择了，就可以剪枝掉
+            path += [i]
+            self.dfs(n,k,i+1,path,res)
+            path.pop()
+
