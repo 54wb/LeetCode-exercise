@@ -1,0 +1,67 @@
+(Hard)
+语言；Python
+
+题目：
+  n 皇后问题 研究的是如何将 n 个皇后放置在 n×n 的棋盘上，并且使皇后彼此之间不能相互攻击。
+  给你一个整数 n ，返回所有不同的 n 皇后问题 的解决方案。
+  每一种解法包含一个不同的 n 皇后问题 的棋子放置方案，该方案中 'Q' 和 '.' 分别代表了皇后和空位。
+
+
+示例：
+  输入：n = 4
+  输出：[[".Q..",
+         "...Q",
+         "Q...",
+         "..Q."],
+         
+         ["..Q.",
+         "Q...",
+         "...Q",
+         ".Q.."]]
+  解释：4 皇后问题存在两个不同的解法。
+
+n皇后问题是比较经典的深度优先搜索问题。由于要求每一个皇后所在的位置不得同行，同列，同主对角线，同副对角线。所以剪枝了许多情况
+不同于排列组合问题，本题采用的并不是修改输出方式，而是修改访问标记。在我们对任意位置进行深度优先搜索时，我们先标记当前位置为已访问，以避免重复遍历（如防止向右搜索后
+又向左返回）；
+在所有的可能都搜索完成后，再回改当前位置为未访问，防止干扰其它位置搜索到当前位置。使用回溯法，我们可以只对一个二维的访问矩阵进行修改，而不用把每次的搜索状态作为一个
+新对象传入递归函数中。
+
+所以本题的解法就为  深度优先搜索+回溯法
+
+board:每次记录皇后排放位置的列表
+co:不同列的访问数组，如果该列为1就表示不能在该列放置皇后
+main:主对角线的访问数组，由于每个主对角线元素坐标之和都为定值且互不相同，所以可以用集合表示
+sub:副对角线的访问数组，与主对角线同理
+
+解法：
+class Solution:
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        def backtrack(row):   #level表示现在在哪一行
+            if row == n:
+                temp = []
+                for s in board:
+                    temp.append(''.join(s))
+                res.append(temp)
+                return 
+            for i in range(n):   #对列进行遍历
+                if i in co or (row+i) in main or (row-i) in sub: #主对角线相加为定值，副对角线相减为定值
+                    continue
+                board[row][i] = 'Q' 
+                co.add(i)
+                main.add(row+i)
+                sub.add(row-i)
+                backtrack(row+1)
+                co.remove(i)          #回溯状态
+                main.remove(row+i)
+                sub.remove(row-i)
+                board[row][i] = '.'
+
+        res = []
+        board = [['.']*n for _ in range(n)]       #用列表内列表是为了便于对放置皇后的位置进行修改
+        co = set()
+        main = set()
+        sub = set()
+        backtrack(0)
+        return res
+
+
