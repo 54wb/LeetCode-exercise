@@ -1,0 +1,56 @@
+(Medium)
+语言：python
+
+题目：
+You are given an n x n binary matrix grid where 1 represents land and 0 represents water.
+An island is a 4-directionally connected group of 1's not connected to any other 1's. There are exactly two islands in grid.
+You may change 0's to 1's to connect the two islands to form one island.
+Return the smallest number of 0's you must flip to connect the two islands.
+
+Example 1:
+Input: grid = [[0,1],[1,0]]
+Output: 1
+
+本题实际上是求两个岛屿间的最短距离，因此我们可以先通过任意搜索方法找到其中一个岛
+屿，然后利用广度优先搜索，查找其与另一个岛屿的最短距离
+
+在寻找这两座岛时，我们使用深度优先搜索。在向外延伸时，我们使用广度优先搜索。
+
+
+class Solution(object):
+    def shortestBridge(self, grid):
+        n = len(grid)
+        def neighbors(r, c):
+            for nr, nc in ((r-1,c),(r,c-1),(r+1,c),(r,c+1)):
+                if 0 <= nr < n and 0 <= nc < n:
+                    yield nr, nc
+
+        def get_components():
+            done = set()    #被访问的位置
+            components = []     #存储岛的坐标
+            for r, row in enumerate(grid):
+                for c, val in enumerate(row):
+                    if val and (r, c) not in done:
+                        # Start dfs
+                        stack = [(r, c)]
+                        seen = {(r, c)}
+                        while stack:
+                            node = stack.pop()
+                            for nei in neighbors(*node):       #广度优先
+                                if grid[nei[0]][nei[1]] and nei not in seen:
+                                    stack.append(nei)
+                                    seen.add(nei)
+                        done |= seen      #保证目前已访问得到元素都在done中
+                        components.append(seen)
+            return components
+
+        source, target = get_components()   #source，target分别为两个岛
+        queue = collections.deque([(node, 0) for node in source])
+        done = set(source)
+        while queue:
+            node, d = queue.popleft()
+            if node in target: return d-1
+            for nei in neighbors(*node):   #nei是周围的位置
+                if nei not in done:
+                    queue.append((nei, d+1))    #每多一次没找到，距离就会加一
+                    done.add(nei)
