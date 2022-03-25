@@ -1,0 +1,108 @@
+(Medium)
+语言:python
+
+题目：
+  按字典 wordList 完成从单词 beginWord 到单词 endWord 转化，一个表示此过程的转换序列是形式上像 beginWord -> s1 -> s2 -> ... -> sk 这样的单词序列，并满足：
+  每对相邻的单词之间仅有单个字母不同。
+  转换过程中的每个单词 si（1 <= i <= k）必须是字典 wordList 中的单词。注意，beginWord 不必是字典 wordList 中的单词。
+  给你两个单词 beginWord 和 endWord ，以及一个字典 wordList 。请你找出并返回所有从 beginWord 到 endWord 的 最短转换序列 ，如果不存在这样的转换序列，返回一个空列表。
+  每个序列都应该以单词列表 [beginWord, s1, s2, ..., sk] 的形式返回。
+
+
+示例 1：
+  输入：beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log","cog"]
+  输出：[["hit","hot","dot","dog","cog"],["hit","hot","lot","log","cog"]]
+  解释：存在 2 种最短的转换序列：
+  "hit" -> "hot" -> "dot" -> "dog" -> "cog"
+  "hit" -> "hot" -> "lot" -> "log" -> "cog"
+
+看到最短路径可以想到使用bfs的方法进行搜索。接下来最重要的就是怎么建图和怎么查找最短路径
+我们可以把wordlist中每个单词看成一个节点，如果两个单词可以转换，那就说明这两个节点相连，从beginword到endword进行搜索即可
+
+解法一：
+class Solution:
+    def findLadders(self, beginWord: str, endWord: str, wordList: List[str]) -> List[List[str]]:
+        res = []
+        se = set(wordList)           #在set中进行查看newword的速度比直接在list中查看要快的多
+        if endWord not in wordList:
+            return res
+        def edges(word):
+            arr=list(word) 
+            for i in range(len(arr)):
+                c = arr[i]
+                for j in range(97,123): #a-z
+                    arr[i]=chr(j)
+                    newWord=''.join(arr)
+                    if newWord in se and newWord not in marked:
+                        yield newWord
+                arr[i] = c
+        marked=set()
+        queue=[[beginWord]]
+        while queue:
+            temp=[]
+            found=False
+            for words in queue:
+                marked.add(words[-1])     #队列里最新的加入已经访问marked中
+            for words in queue:
+                for w in edges(words[-1]):  #下一个变换的单词
+                    v=words+[w]             #v存储当前这一次单词变换的路径
+                    if w == endWord:
+                        res.append(v)       #res存储所有可能
+                        found=True
+                    temp.append(v)          #temp存储从beginword到endword的变换单词情况
+            if found:          #找到就不再遍历了，即使再有endWord，路径也会更长
+                break
+            queue=temp
+        return res
+
+这里定义了edges函数进行遍历边，输入一个单词并返回所有他可以转换的单词。思路就是从a-z替换并查看是否在wordlist中
+
+解法二：
+class Solution:
+    def findLadders(self, beginWord, endWord, wordList):
+        if endWord not in wordList:
+            return []
+        hash=collections.defaultdict(list)
+        for word in wordList:
+            for i in range(len(word)):
+                hash[word[:i]+"*"+word[i+1:]].append(word)
+        def edges(word):
+            for i in range(len(word)):
+                for newWord in hash[word[:i]+'*'+word[i+1:]]:
+                    if newWord not in marked:
+                        yield newWord
+        def findPath(end):
+            res=[]
+            for curr in end:
+                for parent in path[curr[0]]:
+                    res.append([parent]+curr)
+            return res
+        marked=set()
+        path=collections.defaultdict(set)
+        begin=set([beginWord])
+        end=set([endWord])
+        forward=True
+        while begin and end:
+            if len(begin)>len(end):
+                begin,end=end,begin
+                forward=not forward
+            temp=set()
+            for word in begin:
+                marked.add(word)
+            for word in begin:
+                for w in edges(word):
+                    temp.add(w)
+                    if forward:
+                        path[w].add(word)
+                    else:
+                        path[word].add(w)
+            begin=temp
+            if begin&end:
+                res=[[endWord]]
+                while res[0][0]!=beginWord:
+                    res=findPath(res)
+                return res
+        return []
+
+解法二这里参考了题解https://leetcode-cn.com/problems/word-ladder-ii/solution/cong-bfssi-xiang-kai-shi-de-jin-hua-zhi-lu-2400msy/
+的优化方法。即对寻找相邻元素进行优化和双向的bfs
