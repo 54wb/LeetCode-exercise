@@ -62,44 +62,44 @@ class Solution:
     def findLadders(self, beginWord, endWord, wordList):
         if endWord not in wordList:
             return []
-        hash=collections.defaultdict(list)
+        hash=collections.defaultdict(list)        #hash储存和查找会降低时间复杂度，用空间换时间
         for word in wordList:
             for i in range(len(word)):
                 hash[word[:i]+"*"+word[i+1:]].append(word)
         def edges(word):
             for i in range(len(word)):
-                for newWord in hash[word[:i]+'*'+word[i+1:]]:
+                for newWord in hash[word[:i]+'*'+word[i+1:]]:     #如果word[i:]+'*'+word[i+1:]在hash中，就说明有相邻的节点
                     if newWord not in marked:
                         yield newWord
-        def findPath(end):
+        def findPath(end):                 
             res=[]
             for curr in end:
                 for parent in path[curr[0]]:
                     res.append([parent]+curr)
             return res
-        marked=set()
-        path=collections.defaultdict(set)
-        begin=set([beginWord])
+        marked=set()                         #已访问节点
+        path=collections.defaultdict(set)    #path存储路径
+        begin=set([beginWord])               #begin和end分别存储从开始或末尾开始转换的节点
         end=set([endWord])
-        forward=True
-        while begin and end:
-            if len(begin)>len(end):
+        forward=True                         #bfs的方向
+        while begin and end:                 
+            if len(begin)>len(end):          #看那头的节点多，谁节点少就从谁开始搜索，也就是谁节点少谁就是start
                 begin,end=end,begin
                 forward=not forward
             temp=set()
             for word in begin:
                 marked.add(word)
-            for word in begin:
-                for w in edges(word):
+            for word in begin:              #word当前节点
+                for w in edges(word):       #w下一个相邻节点
                     temp.add(w)
-                    if forward:
+                    if forward:             
                         path[w].add(word)
                     else:
                         path[word].add(w)
-            begin=temp
-            if begin&end:
+            begin=temp       #将下一个相邻节点又作为开始节点          
+            if begin&end:      #当两者有交集时
                 res=[[endWord]]
-                while res[0][0]!=beginWord:
+                while res[0][0]!=beginWord:     #必须是正序的
                     res=findPath(res)
                 return res
         return []
