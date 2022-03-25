@@ -103,6 +103,10 @@ class Solution:
                     res=findPath(res)
                 return res
         return []
+因为已经知道了开始节点和结束节点，所以可以从2头开始遍历，哪头的节点少，就遍历哪头，如果2头的节点重合了（有交集）说明连上了，遍历结束。
+如果一直没交集，任何一头走到末尾就可以结束，代表全部节点都遍历完成了。
+这里为了更好的取交集，begin和end都用了set来表示，同时把路径单独存储在了path字典中，一旦出现交集，从最后一个节点，依据path的存储，直到找到开始节点，能出现交集，说明一定能找到开头。
+
 
 解法二这里参考了题解https://leetcode-cn.com/problems/word-ladder-ii/solution/cong-bfssi-xiang-kai-shi-de-jin-hua-zhi-lu-2400msy/
 的优化方法。即对寻找相邻元素进行优化和双向的bfs
