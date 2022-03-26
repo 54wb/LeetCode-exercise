@@ -1,0 +1,51 @@
+(Medium)
+语言:python
+
+题目：
+  给你一个 m x n 的矩阵 board ，由若干字符 'X' 和 'O' ，找到所有被 'X' 围绕的区域，并将这些区域里所有的 'O' 用 'X' 填充。
+  
+示例：
+  输入：board = [["X","X","X","X"],
+                 ["X","O","O","X"],
+                 ["X","X","O","X"],
+                 ["X","O","X","X"]]
+  输出：[["X","X","X","X"],
+        ["X","X","X","X"],
+        ["X","X","X","X"],
+        ["X","O","X","X"]]
+  解释：被围绕的区间不会存在于边界上，换句话说，任何边界上的 'O' 都不会被填充为 'X'。
+  任何不在边界上，或不与边界上的 'O' 相连的 'O' 最终都会被填充为 'X'。如果两个元素在水平或垂直方向相邻，则称它们是“相连”的。
+
+根据这个解释的意思就可以看出来，首先边界上的O都不会被填充。且与边界相连的O也不会被填充。那么我们只需要从边界开始搜索 ，用dfs或者bfs的方法
+找到所有相连的O。剩下的O就是需要被填充的
+
+class Solution:
+    def solve(self, board: List[List[str]]) -> None:
+        """
+        Do not return anything, modify board in-place instead.
+        """
+        m,n = len(board),len(board[0])
+        dir = [(1,0),(-1,0),(0,1),(0,-1)]
+        def dfs(i,j):
+            if 0<=i<m and 0<=j<n and board[i][j] == 'O':
+                board[i][j] = 'A'      #不被填充的先修改等待之后改回去
+                for x,y in dir:
+                    dfs(i+x,j+y)       #寻找与边界的O相连的
+            else: return 
+        for i in range(m):       #左右两边界
+            dfs(i,0)
+            dfs(i,n-1)
+        for j in range(1,n-1):   #上下两边界
+            dfs(0,j)
+            dfs(m-1,j)
+        for i in range(m):
+            for j in range(n):
+                if board[i][j] == 'O': 
+                    board[i][j] = 'X'
+                elif board[i][j] == 'A':
+                    board[i][j] = 'O'
+
+
+
+
+
