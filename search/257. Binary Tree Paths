@@ -1,0 +1,61 @@
+(Easy)
+语言:python
+
+题目:
+  给你一个二叉树的根节点 root ，按 任意顺序 ，返回所有从根节点到叶子节点的路径。
+  叶子节点 是指没有子节点的节点。
+
+
+示例:
+  输入：root = [1,2,3,null,5]
+  输出：["1->2->5","1->3"]
+  
+  
+  这道题很明显是一道搜索题，首先想到用广度优先搜索和深度优先搜索都可以解决
+  
+解法一：
+广度优先搜索
+from collections import deque
+class Solution:
+    def binaryTreePaths(self, root: Optional[TreeNode]) -> List[str]:
+        paths = []
+        node_deque = deque([root])
+        path_deque = deque([str(root.val)])
+        while node_deque:
+            node = node_deque.popleft()
+            path = path_deque.popleft()
+            if not node.left and not node.right:
+                paths.append(path)
+            if node.left:
+                node_deque.append(node.left)
+                path_deque.append(path+'->'+str(node.left.val))
+            if node.right:
+                node_deque.append(node.right)
+                path_deque.append(path+'->'+str(node.right.val))
+        return paths
+
+广度优先的思路就是用队列结构存储搜索过程中遇到的额节点，先入先出
+
+
+解法二：
+深度优先
+class Solution:
+    def binaryTreePaths(self, root: Optional[TreeNode]) -> List[str]:
+        res = []
+        def dfs(root,path):
+            if root:
+                path += str(root.val)
+                if not root.right and not root.left:
+                    paths.append(path)
+                else:
+                    path += '->'
+                    dfs(root.right,path)
+                    dfs(root.left,path)
+        paths = []
+        dfs(root,'')
+        return paths
+        
+        
+这里的深度优先使用了遍历的思路进行
+    
+         
