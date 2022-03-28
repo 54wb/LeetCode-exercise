@@ -1,0 +1,46 @@
+（Medium）
+语言：Python
+
+题目：
+  给定一个可包含重复数字的序列 nums ，按任意顺序 返回所有不重复的全排列。
+
+示例 1：
+  输入：nums = [1,1,2]
+  输出：
+  [[1,1,2],
+   [1,2,1],
+   [2,1,1]]
+
+
+这道排列题是46题的进阶版本。区别在于这道题nums数组中有了重复的元素。如果去重是这道问题的关键
+首先想到的是对结果进行去重，但是由于最终的结果是list，list是不可哈希类型，直接去重不太方便。所以要使用一定的标记进行记录
+而在本题解中，我们选择对原数组排序，保证相同的数字都相邻，然后每次填入的数一定是这个数所在重复数集合中「从左往右第一个未被填过的数字」，即如下的判断条件：
+if (i > 0 && nums[i] == nums[i - 1] && !vis[i - 1]) {
+    continue;
+}
+这个判断条件保证了对于重复数的集合，一定是从左往右逐个填入的。
+
+解法：
+class Solution:
+    def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+        res,n = [],len(nums)
+        nums.sort()
+        vis = [0 for i in range(n)]
+        def backward(index,vis,path):
+            if index == n:
+                res.append(path.copy())
+                return 
+            for i in range(n):
+                if not vis[i]:
+                    if i>0 and nums[i] == nums[i-1] and not vis[i-1]:
+                        continue
+                    vis[i] = 1
+                    path.append(nums[i])
+                    backward(index+1,vis,path)
+                    vis[i] = 0
+                    path.pop()            
+        backward(0,vis,[])
+        return res
+
+
+
